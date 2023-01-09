@@ -1,6 +1,7 @@
 package `in`.neil.charcha.ui.components
 
 import `in`.neil.charcha.R
+import `in`.neil.charcha.ui.theme.SIZE
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
@@ -10,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun LoadingScreen(modifier: Modifier = Modifier) {
@@ -19,23 +19,24 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize()
     ) {
         Image(
-            modifier = Modifier.size(200.dp),
+            modifier = Modifier.size(SIZE.LARGE * 10),
             painter = painterResource(R.drawable.loading_img),
-            contentDescription = "loading"
+            contentDescription = stringResource(R.string.loading)
         )
     }
 }
 
 @Composable
-fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier) {
+fun ErrorScreen(retryAction: () -> Unit = {}, noRetry: Boolean = false) {
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(stringResource(R.string.loading_failed))
-        Button(onClick = retryAction) {
-            Text(stringResource(R.string.retry))
-        }
+        if (!noRetry)
+            Button(onClick = retryAction) {
+                Text(stringResource(R.string.retry))
+            }
     }
 }

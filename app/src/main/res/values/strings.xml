@@ -14,4 +14,7 @@
     <string name="comment_screen">Comments</string>
     <string name="loading_failed">Failed to load</string>
     <string name="retry">Retry</string>
+    <string name="time">2 hours ago</string>
+    <string name="options">more options</string>
+    <string name="loading">loading</string>
 </resources>

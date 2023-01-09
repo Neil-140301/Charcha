@@ -2,7 +2,9 @@ package `in`.neil.charcha.ui.components
 
 import `in`.neil.charcha.R
 import `in`.neil.charcha.data.Post
+import `in`.neil.charcha.ui.theme.Font
 import `in`.neil.charcha.ui.theme.GhostWhite
+import `in`.neil.charcha.ui.theme.SIZE
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -10,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -32,8 +35,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
@@ -62,34 +63,34 @@ fun Post(
                 )
             }
             .padding(
-                start = 14.dp,
-                end = 14.dp,
-                top = 14.dp,
-                bottom = if (hideActions) 15.dp else 0.dp
+                start = SIZE.PADDING,
+                end = SIZE.PADDING,
+                top = SIZE.PADDING,
+                bottom = if (hideActions) SIZE.PADDING else SIZE.ZERO
             )
 
     ) {
         //header
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            AuthorInfo(name = data.user)
-            Spacer(Modifier.width(18.dp))
+            AuthorInfo(name = data.user, avatar = data.userAvatar)
+            Spacer(Modifier.width(SIZE.MEDIUM))
             //Post type
             Text(
                 text = data.postType.name,
-                color = Color.Blue,
-                fontSize = 12.sp,
+                color = MaterialTheme.colors.primary,
+                fontSize = Font.sm,
                 modifier = Modifier
                     .align(Alignment.Top)
-                    .clip(RoundedCornerShape(4.dp))
+                    .clip(RoundedCornerShape(SIZE.RADIUS))
                     .background(GhostWhite)
-                    .padding(8.dp),
+                    .padding(SIZE.SMALL),
 
                 )
             Spacer(modifier = Modifier.weight(0.8f))
             //more
             Icon(
                 Icons.Outlined.MoreVert,
-                contentDescription = "more options",
+                contentDescription = stringResource(R.string.options),
             )
         }
 
@@ -97,7 +98,7 @@ fun Post(
         Text(
             text = data.content,
             maxLines = 3,
-            modifier = Modifier.padding(vertical = 12.dp)
+            modifier = Modifier.padding(vertical = SIZE.MEDIUM)
         )
 
         // media
@@ -105,7 +106,7 @@ fun Post(
             PostMedia(images = data.images)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(SIZE.MEDIUM))
 
         // actions
         if (!hideActions) {
@@ -142,15 +143,15 @@ fun Post(
                     label = stringResource(id = R.string.share)
                 )
             }
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(SIZE.PADDING))
         }
     }
 }
 
 
 @Composable
-fun PostMedia(images: List<Int>) {
-    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+fun PostMedia(images: List<String>) {
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(SIZE.SMALL)) {
         items(images) {
             MediaCard(it)
         }
@@ -158,15 +159,15 @@ fun PostMedia(images: List<Int>) {
 }
 
 @Composable
-fun MediaCard(id:Int, modifier: Modifier = Modifier) {
+fun MediaCard(imageSrc: String, modifier: Modifier = Modifier) {
     Card(
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(SIZE.SMALL),
         modifier = modifier
-            .size(width = 180.dp, height = 200.dp)
+            .size(width = SIZE.IMG_WIDTH, height = SIZE.IMG_HEIGHT)
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data("https://picsum.photos/id/$id/200/300")
+                .data(imageSrc)
                 .decoderFactory(SvgDecoder.Factory())
                 .crossfade(true)
                 .build(),

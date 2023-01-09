@@ -10,15 +10,17 @@ enum class PostType {
 data class Post(
     val id: Int,
     val user: String,
+    val userAvatar: String = "",
     val postType: PostType,
     val content: String,
-    val images: List<Int> = listOf(),
+    val images: List<String> = listOf(),
     val comments: List<Comment> = listOf(),
     val likes: Int = 0
 )
 
 data class Comment(
     val user: String,
+    val userAvatar: String = "",
     val content: String,
     val id: Int
 )
@@ -41,15 +43,6 @@ data class ApiUser(
     val phone: String,
     val website: String,
     val company: Company,
-)
-
-@Serializable
-data class ApiPhoto(
-    val albumId: Int,
-    val id: Int,
-    val title: String,
-    val url: String,
-    val thumbnailUrl: String,
 )
 
 @Serializable

@@ -2,11 +2,10 @@ package `in`.neil.charcha.ui
 
 import `in`.neil.charcha.CharchaRoutes
 import `in`.neil.charcha.R
+import `in`.neil.charcha.ui.theme.Font
+import `in`.neil.charcha.ui.theme.SIZE
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.runtime.Composable
@@ -17,22 +16,19 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
 fun CharchaTopBar(
     currentScreen: CharchaRoutes,
-    navigateUp: () -> Unit,
-    modifier: Modifier = Modifier
+    navigateUp: () -> Unit
 ) {
     TopAppBar(
-        backgroundColor = Color.White
+        backgroundColor = MaterialTheme.colors.background
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = if (currentScreen == CharchaRoutes.Start) Arrangement.SpaceAround else Arrangement.Start,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = SIZE.MEDIUM)
         ) {
             if (currentScreen == CharchaRoutes.Start) {
                 Tab(
@@ -46,7 +42,7 @@ fun CharchaTopBar(
                 IconButton(onClick = navigateUp) {
                     Icon(Icons.Outlined.ArrowBack, contentDescription = "go back")
                 }
-                Text(text = stringResource(id = R.string.comment_screen), fontSize = 20.sp)
+                Text(text = stringResource(id = R.string.comment_screen), fontSize = Font.lg)
             }
         }
 
@@ -60,7 +56,7 @@ fun Tab(label: String, modifier: Modifier = Modifier, isActive: Boolean = false)
         modifier = modifier
             .fillMaxSize()
             .drawBehind {
-                val borderSize = 4.dp.toPx()
+                val borderSize = SIZE.RADIUS.toPx()
                 drawLine(
                     color = if (isActive) Color.Blue else Color.White,
                     start = Offset(0f, size.height),
@@ -68,13 +64,13 @@ fun Tab(label: String, modifier: Modifier = Modifier, isActive: Boolean = false)
                     strokeWidth = borderSize
                 )
             }
-            .padding(20.dp),
+            .padding(SIZE.LARGE),
         contentAlignment = Alignment.BottomEnd,
     ) {
         Text(
             text = label,
             textAlign = TextAlign.Center,
-            color = if (isActive) Color.Blue else Color.Gray,
+            color = if (isActive) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
             modifier = Modifier.fillMaxWidth()
         )
     }

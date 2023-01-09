@@ -1,26 +1,24 @@
 package `in`.neil.charcha
 
 import `in`.neil.charcha.data.Post
-import `in`.neil.charcha.ui.CharchaTopBar
-import `in`.neil.charcha.ui.DataUiState
-import `in`.neil.charcha.ui.PostComments
-import `in`.neil.charcha.ui.PostViewModel
+import `in`.neil.charcha.ui.*
 import `in`.neil.charcha.ui.components.ErrorScreen
 import `in`.neil.charcha.ui.components.LoadingScreen
-import `in`.neil.charcha.ui.components.Post
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+
 
 enum class CharchaRoutes {
     Start, Comments,
@@ -28,20 +26,16 @@ enum class CharchaRoutes {
 
 @Composable
 fun CharchaApp(
-    viewModel: PostViewModel,
+    viewModel: PostViewModel = hiltViewModel(),
 ) {
-    when (val dataUiState: DataUiState = viewModel.dataUiState) {
+    val dataUiState by viewModel.dataUiState.collectAsState()
 
+    when (dataUiState) {
         is DataUiState.Success -> {
-            val posts = remember {
-                dataUiState.posts
-            }
-
-            CharchaScreen(
-                posts,
-                onCommentsView = { viewModel.setActivePost(it) },
-                activePost = dataUiState.activePost
-            )
+            val posts = (dataUiState as DataUiState.Success).data.collectAsLazyPagingItems()
+            CharchaScreen(posts,
+                activePost = viewModel.activePost,
+                onCommentView = { viewModel.setCurrentPost(it) })
         }
         is DataUiState.Loading -> LoadingScreen()
         is DataUiState.Error -> ErrorScreen(retryAction = { viewModel.getAllPosts() })
@@ -52,9 +46,9 @@ fun CharchaApp(
 
 @Composable
 fun CharchaScreen(
-    posts: List<Post>,
+    posts: LazyPagingItems<Post>,
     activePost: Post?,
-    onCommentsView: (Post) -> Unit,
+    onCommentView: (Post) -> Unit,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController()
 ) {
@@ -65,7 +59,7 @@ fun CharchaScreen(
     )
 
     Scaffold(topBar = {
-        CharchaTopBar(currentScreen = currentScreen, navigateUp = { navController.navigateUp() })
+        CharchaTopBar(currentScreen = currentScreen) { navController.navigateUp() }
     }) {
 
         NavHost(
@@ -75,16 +69,11 @@ fun CharchaScreen(
         ) {
             // start
             composable(CharchaRoutes.Start.name) {
-                LazyColumn {
-                    items(posts, key = { p -> "${p.id}-post-${p.content}" }) { post ->
-                        Post(
-                            onCommentsClick = {
-                                onCommentsView(post)
-                                navController.navigate(CharchaRoutes.Comments.name)
-                            }, data = post
-                        )
-                    }
-                }
+                CharchaHome(
+                    posts = posts,
+                    onNavigate = { route -> navController.navigate(route) },
+                    onCommentView = onCommentView
+                )
             }
 
             composable(CharchaRoutes.Comments.name) {
